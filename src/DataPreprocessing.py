@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import sklearn
 import pickle
 import joblib #used for joblib.dump and joblib.load
-from colorsys import rgb_to_hsv
+import cv2
 
 #Enhanced Vegetation Index
 def EVI(red, blue, nir) :
@@ -44,8 +44,8 @@ print(" -- Datasets loaded.\n")
 
 for i in range(100) :
 
-    image_rgb_float32 = train_x[i, :, : 0-2].astype(np.float32)
-    image_hsv = cv2.cvtColor(image_rgb_float32, cv2.COLOR_RGB2HSV)
+    image_rgb = train_x[i, :, :, 0:3]
+    image_hsv = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2HSV)
 
     #means (6)
     red_mean = np.mean(train_x[i, :, :, 0])
