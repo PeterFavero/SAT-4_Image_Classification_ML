@@ -44,32 +44,58 @@ print(" -- Datasets loaded.\n")
 
 for i in range(100) :
 
-    image_rgb = train_x[i, :, :, 0:3]
-    image_hsv = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2HSV)
+    #create copies of current image in hsv format to access hue and sat
+    train_image_hsv = cv2.cvtColor(train_x[i, :, :, 0:3], cv2.COLOR_RGB2HSV)
+    test_image_hsv = cv2.cvtColor(test_x[i, :, :, 0:3], cv2.COLOR_RGB2HSV)
+
+    #training set:
 
     #means (6)
-    red_mean = np.mean(train_x[i, :, :, 0])
-    green_mean = np.mean(train_x[i, :, :, 1])
-    blue_mean = np.mean(train_x[i, :, :, 2])
-    nir_mean = np.mean(train_x[i, :, :, 3])
-    hue_mean = np.mean(image_hsv[:, :, 0])
-    sat_mean = np.mean(image_hsv[:, :, 1])
+    train_red_mean = np.mean(train_x[i, :, :, 0])
+    train_green_mean = np.mean(train_x[i, :, :, 1])
+    train_blue_mean = np.mean(train_x[i, :, :, 2])
+    train_nir_mean = np.mean(train_x[i, :, :, 3])
+    train_hue_mean = np.mean(train_image_hsv[:, :, 0])
+    train_sat_mean = np.mean(train_image_hsv[:, :, 1])
 
     #standard deviations (6)
-    red_std = np.std(train_x[i, :, :, 0])
-    green_std = np.std(train_x[i, :, :, 1])
-    blue_std = np.std(train_x[i, :, :, 2])
-    nir_std = np.std(train_x[i, :, :, 3])
-    hue_std = np.std(image_hsv[:, :, 0])
-    sat_std = np.std(image_hsv[:, :, 1])
+    train_red_std = np.std(train_x[i, :, :, 0])
+    train_green_std = np.std(train_x[i, :, :, 1])
+    train_blue_std = np.std(train_x[i, :, :, 2])
+    train_nir_std = np.std(train_x[i, :, :, 3])
+    train_hue_std = np.std(train_image_hsv[:, :, 0])
+    train_sat_std = np.std(train_image_hsv[:, :, 1])
     
     #indexes (3)
-    evi = EVI(red_mean, blue_mean, nir_mean)
-    ndvi = NDVI(red_mean, nir_mean)
-    arvi = ARVI(red_mean, blue_mean, nir_mean)
+    train_evi = EVI(train_red_mean, train_blue_mean, train_nir_mean)
+    train_ndvi = NDVI(train_red_mean, train_nir_mean)
+    train_arvi = ARVI(train_red_mean, train_blue_mean, train_nir_mean)
 
     #intensity (1)
-    int = (red_mean + green_mean + blue_mean + nir_mean)
+    train_int = (train_red_mean + train_green_mean + train_blue_mean + train_nir_mean)
+
+    #testing set
+    
+    #means (6)
+    test_red_mean = np.mean(test_x[i, :, :, 0])
+    test_green_mean = np.mean(test_x[i, :, :, 1])
+    test_blue_mean = np.mean(test_x[i, :, :, 2])
+    test_nir_mean = np.mean(test_x[i, :, :, 3])
+    test_hue_mean = np.mean(test_image_hsv[:, :, 0])
+    test_sat_mean = np.mean(test_image_hsv[:, :, 1])
+
+    #standard deviations (6)
+    test_red_std = np.std(test_x[i, :, :, 0])
+    test_green_std = np.std(test_x[i, :, :, 1])
+    test_blue_std = np.std(test_x[i, :, :, 2])
+    test_nir_std = np.std(test_x[i, :, :, 3])
+    test_hue_std = np.std(test_image_hsv[:, :, 0])
+    test_sat_std = np.std(test_image_hsv[:, :, 1])
+  
+    #indexes (3)
+    test_evi = EVI(test_red_mean, test_blue_mean, test_nir_mean)
+    test_ndvi = NDVI(test_red_mean, test_nir_mean)
+    test_arvi = ARVI(test_red_mean, test_blue_mean, test_nir_mean)
 
     print('--', 'Barren' if train_y[i, 0] == 1 else 'Trees' if train_y[i, 1] == 1 
       else 'Grassland' if train_y[i, 2] == 1 else 'Other', "--") 
