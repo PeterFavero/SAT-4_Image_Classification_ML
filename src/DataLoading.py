@@ -68,7 +68,7 @@ print(" -- Beginning training dataset storage:")
 for i in range(num_training_entries) :
     train_x.append(mat_data['train_x'][:, :, :, selected_training_indices[i]])
     train_y.append(mat_data['train_y'][:, selected_training_indices[i]])
-    if( i % 100 == 0 ) : print("      * Stored point #" + str(i))
+    if( i % 1000 == 0 ) : print("      * Stored point #" + str(i))
 print(" -- Training dataset (" + str(num_training_entries) + " entries) stored.")
 #Save test set using dump so we don't have to load in the full dataset in subsequent runs
 joblib.dump(train_x, 'loaded/train_x_loaded')
@@ -79,7 +79,7 @@ print(" -- Beginning testing dataset storage:")
 for i in range(num_testing_entries) :
    test_x.append(mat_data['test_x'][:, :, :, selected_testing_indices[i]])
    test_y.append(mat_data['test_y'][:, selected_testing_indices[i]])
-   if( i % 100 == 0 ) : print("      * Stored point #" + str(i))
+   if( i % 1000 == 0 ) : print("      * Stored point #" + str(i))
 print(" -- Testing dataset (" + str(num_testing_entries) + " entries) stored.")
 #Save test set using dump so we don't have to load in the full dataset in subsequent runs
 joblib.dump(test_x, 'loaded/test_x_loaded')
