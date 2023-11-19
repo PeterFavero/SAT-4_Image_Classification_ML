@@ -19,7 +19,7 @@ import cv2
 
 #Enhanced Vegetation Index
 def EVI(red, blue, nir) :
-    return 2.5 * (nir - red) / (nir + 6*red - 7.5*blue +1)
+    return 2.5 * (nir - red) / (nir + 6*red - 7.5*blue + 1)
 
 #Normalized Vegtation Index
 def NDVI(red, nir) :
@@ -39,8 +39,12 @@ TEST_SIZE = joblib.load('data/num_testing_entries')
 train_x = np.array(joblib.load('data/train_x_loaded')) #TRAIN_SIZE x 28 x 28 x 4
 train_y = np.array(joblib.load('data/train_y_loaded')) #TRAIN_SIZE x 4
 test_x = np.array(joblib.load('data/test_x_loaded')) #TEST_SIZE x 28 x 28 x 4
-test_y = np.array(joblib.load('data/test_y_loaded')) #TEST_SIZE x 28 x 28 x 4
+test_y = np.array(joblib.load('data/test_y_loaded')) #TEST_SIZE x 4
 print(" -- Datasets loaded.\n")
+
+#Declare empty preprocessed datasets
+train_x_proc = pd.DataFrame()
+test_x_proc = pd.DataFrame()
 
 for i in range(100) :
 
@@ -48,58 +52,71 @@ for i in range(100) :
     train_image_hsv = cv2.cvtColor(train_x[i, :, :, 0:3], cv2.COLOR_RGB2HSV)
     test_image_hsv = cv2.cvtColor(test_x[i, :, :, 0:3], cv2.COLOR_RGB2HSV)
 
-    #training set:
-
-    #means (6)
+    """ unused training feautes
+    #unused means (4)
     train_red_mean = np.mean(train_x[i, :, :, 0])
     train_green_mean = np.mean(train_x[i, :, :, 1])
     train_blue_mean = np.mean(train_x[i, :, :, 2])
     train_nir_mean = np.mean(train_x[i, :, :, 3])
-    train_hue_mean = np.mean(train_image_hsv[:, :, 0])
-    train_sat_mean = np.mean(train_image_hsv[:, :, 1])
-
-    #standard deviations (6)
+    #unused standard deviations (4)
     train_red_std = np.std(train_x[i, :, :, 0])
     train_green_std = np.std(train_x[i, :, :, 1])
     train_blue_std = np.std(train_x[i, :, :, 2])
     train_nir_std = np.std(train_x[i, :, :, 3])
-    train_hue_std = np.std(train_image_hsv[:, :, 0])
-    train_sat_std = np.std(train_image_hsv[:, :, 1])
-    
-    #indexes (3)
+    #unused indexes (3)
     train_evi = EVI(train_red_mean, train_blue_mean, train_nir_mean)
     train_ndvi = NDVI(train_red_mean, train_nir_mean)
     train_arvi = ARVI(train_red_mean, train_blue_mean, train_nir_mean)
-
-    #intensity (1)
+    #unused intensity (1)
     train_int = (train_red_mean + train_green_mean + train_blue_mean + train_nir_mean)
+    #standardize means on a scale from 0 to 1 by multiplying each of them by 1/intensity
+    train_red_mean /= train_int
+    train_green_mean /= train_int
+    train_blue_mean /= train_int
+    train_nir_mean /= train_int
+    """
 
-    #testing set
-    
-    #means (6)
+    #training features (6) 
+    train_hue_mean = np.mean(train_image_hsv[:, :, 0])
+    train_sat_mean = np.mean(train_image_hsv[:, :, 1])
+    train_val_mean = np.mean(train_image_hsv[:, :, 2])
+    train_hue_std = np.std(train_image_hsv[:, :, 0])
+    train_sat_std = np.std(train_image_hsv[:, :, 1])
+    train_val_std = np.std(train_image_hsv[:, :, 2])
+
+    """ unused testing features:
+    #unused means (4)
     test_red_mean = np.mean(test_x[i, :, :, 0])
     test_green_mean = np.mean(test_x[i, :, :, 1])
     test_blue_mean = np.mean(test_x[i, :, :, 2])
     test_nir_mean = np.mean(test_x[i, :, :, 3])
-    test_hue_mean = np.mean(test_image_hsv[:, :, 0])
-    test_sat_mean = np.mean(test_image_hsv[:, :, 1])
-
-    #standard deviations (6)
+    #unused standard deviations (4)
     test_red_std = np.std(test_x[i, :, :, 0])
     test_green_std = np.std(test_x[i, :, :, 1])
     test_blue_std = np.std(test_x[i, :, :, 2])
     test_nir_std = np.std(test_x[i, :, :, 3])
-    test_hue_std = np.std(test_image_hsv[:, :, 0])
-    test_sat_std = np.std(test_image_hsv[:, :, 1])
-  
-    #indexes (3)
+    #unused indexes (3)
     test_evi = EVI(test_red_mean, test_blue_mean, test_nir_mean)
     test_ndvi = NDVI(test_red_mean, test_nir_mean)
     test_arvi = ARVI(test_red_mean, test_blue_mean, test_nir_mean)
+    #unused intensity (1)
+    test_int = (test_red_mean + test_green_mean + test_blue_mean + test_nir_mean)
+    #standardize means on a scale from 0 to 1 by multiplying each of them by 1/intensity
+    test_red_mean /= test_int
+    test_green_mean /= test_int
+    test_blue_mean /= test_int
+    test_nir_mean /= test_int
+    """
 
-    print('--', 'Barren' if train_y[i, 0] == 1 else 'Trees' if train_y[i, 1] == 1 
-      else 'Grassland' if train_y[i, 2] == 1 else 'Other', "--") 
-    print()
+    #testing features (6)
+    test_hue_mean = np.mean(test_image_hsv[:, :, 0])
+    test_sat_mean = np.mean(test_image_hsv[:, :, 1])
+    test_val_mean = np.mean(test_image_hsv[:, :, 2])
+    test_hue_std = np.std(test_image_hsv[:, :, 0])
+    test_sat_std = np.std(test_image_hsv[:, :, 1])
+    test_val_std = np.std(test_image_hsv[:, :, 2])
+
+    
 
 print("-------\nDataPreprocessing.py terminated successfully.\n----\n")
 
@@ -127,3 +144,7 @@ print("-------\nDataPreprocessing.py terminated successfully.\n----\n")
 #From previous file: "You’re welcome to use the colorsys module to convert from RGB to HSV"
 
 #After this file is run, run ModelTraining.py
+
+#Evan says use hsv instead of rgb, only about 6 features
+#Defnitely serialize
+#Accuracy hopefully over 80%
