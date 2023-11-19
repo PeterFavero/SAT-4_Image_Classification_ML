@@ -49,8 +49,8 @@ print(" -- Archive loaded.\n")
 #training and testing on small subsets (Andrew did 10K and 2.5K, tune as you need).
 num_training_entries = 10000
 num_testing_entries = 2500
-joblib.dump(num_training_entries, 'data/num_training_entries')
-joblib.dump(num_testing_entries, 'data/num_testing_entries')
+joblib.dump(num_training_entries, 'loaded/num_training_entries')
+joblib.dump(num_testing_entries, 'loaded/num_testing_entries')
 
 #Randomly selected all indices used for training and testing 
 selected_training_indices = np.random.choice(MAT_TRAIN_SIZE, num_training_entries, replace=False)
@@ -71,8 +71,8 @@ for i in range(num_training_entries) :
     if( i % 100 == 0 ) : print("      * Stored point #" + str(i))
 print(" -- Training dataset (" + str(num_training_entries) + " entries) stored.")
 #Save test set using dump so we don't have to load in the full dataset in subsequent runs
-joblib.dump(train_x, 'data/train_x_loaded')
-joblib.dump(train_y, 'data/train_y_loaded')
+joblib.dump(train_x, 'loaded/train_x_loaded')
+joblib.dump(train_y, 'loaded/train_y_loaded')
 print(" -- Training dataset dumped with joblib.\n")
 
 print(" -- Beginning testing dataset storage:")
@@ -82,8 +82,8 @@ for i in range(num_testing_entries) :
    if( i % 100 == 0 ) : print("      * Stored point #" + str(i))
 print(" -- Testing dataset (" + str(num_testing_entries) + " entries) stored.")
 #Save test set using dump so we don't have to load in the full dataset in subsequent runs
-joblib.dump(test_x, 'data/test_x_loaded')
-joblib.dump(test_y, 'data/test_y_loaded')
+joblib.dump(test_x, 'loaded/test_x_loaded')
+joblib.dump(test_y, 'loaded/test_y_loaded')
 print(" -- Testing dataset dumped with joblib.\n")
 
 print("-------\nDataLoading.py terminated successfully.\n----\n")

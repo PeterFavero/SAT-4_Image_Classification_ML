@@ -32,19 +32,19 @@ def ARVI(red, blue, nir) :
 print("\n----\nDataPreprocessing.py successfully compiled & run.\n-------\n")
 
 #Load size of training and testing subsets (constant here, do not edit)
-TRAIN_SIZE = joblib.load('data/num_training_entries')
-TEST_SIZE = joblib.load('data/num_testing_entries')
+TRAIN_SIZE = joblib.load('loaded/num_training_entries')
+TEST_SIZE = joblib.load('loaded/num_testing_entries')
 
 #Load datasets from DataLoading.py
-train_x = np.array(joblib.load('data/train_x_loaded')) #TRAIN_SIZE x 28 x 28 x 4
-train_y = np.array(joblib.load('data/train_y_loaded')) #TRAIN_SIZE x 4
-test_x = np.array(joblib.load('data/test_x_loaded')) #TEST_SIZE x 28 x 28 x 4
-test_y = np.array(joblib.load('data/test_y_loaded')) #TEST_SIZE x 4
+train_x = np.array(joblib.load('loaded/train_x_loaded')) #TRAIN_SIZE x 28 x 28 x 4
+train_y = np.array(joblib.load('loaded/train_y_loaded')) #TRAIN_SIZE x 4
+test_x = np.array(joblib.load('loaded/test_x_loaded')) #TEST_SIZE x 28 x 28 x 4
+test_y = np.array(joblib.load('loaded/test_y_loaded')) #TEST_SIZE x 4
 print(" -- Datasets loaded.\n")
 
 #Declare empty preprocessed datasets
-train_x_proc = pd.DataFrame()
-test_x_proc = pd.DataFrame()
+train_x_preprocessed = []
+test_x_preprocessed = []
 
 for i in range(100) :
 
@@ -76,13 +76,24 @@ for i in range(100) :
     train_nir_mean /= train_int
     """
 
-    #training features (6) 
+    #compute training 6 features 
     train_hue_mean = np.mean(train_image_hsv[:, :, 0])
     train_sat_mean = np.mean(train_image_hsv[:, :, 1])
     train_val_mean = np.mean(train_image_hsv[:, :, 2])
     train_hue_std = np.std(train_image_hsv[:, :, 0])
     train_sat_std = np.std(train_image_hsv[:, :, 1])
     train_val_std = np.std(train_image_hsv[:, :, 2])
+
+    #append an array containing each training feature 
+    #to the preprocessed training dataset
+    train_x_preprocessed.append([
+        train_hue_mean,
+        train_sat_mean,
+        train_val_mean,
+        train_hue_std,
+        train_sat_std,
+        train_val_std
+    ])
 
     """ unused testing features:
     #unused means (4)
@@ -108,7 +119,7 @@ for i in range(100) :
     test_nir_mean /= test_int
     """
 
-    #testing features (6)
+    #computing 6 testing features
     test_hue_mean = np.mean(test_image_hsv[:, :, 0])
     test_sat_mean = np.mean(test_image_hsv[:, :, 1])
     test_val_mean = np.mean(test_image_hsv[:, :, 2])
@@ -116,7 +127,19 @@ for i in range(100) :
     test_sat_std = np.std(test_image_hsv[:, :, 1])
     test_val_std = np.std(test_image_hsv[:, :, 2])
 
-    
+    #append an array containing each testing feature 
+    #to the preprocessed testing dataset
+    test_x_preprocessed.append([
+        test_hue_mean,
+        test_sat_mean,
+        test_val_mean,
+        test_hue_std,
+        test_sat_std,
+        test_val_std
+    ])
+
+joblib.dump(train_x_preprocessed, 'preprocessed/train_x_preprocessed')
+joblib.dump(test_x_preprocessed, 'preprocessed/test_x_preprocessed')
 
 print("-------\nDataPreprocessing.py terminated successfully.\n----\n")
 
