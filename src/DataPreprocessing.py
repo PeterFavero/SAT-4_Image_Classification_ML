@@ -10,24 +10,20 @@
 # MAKE SURE TO PRE-PROCESS YOUR TEST SET AS WELL!
 
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import sklearn
-import pickle
 import joblib #used for joblib.dump and joblib.load
 import cv2
 
+""" unused feature calculation methods
 #Enhanced Vegetation Index
 def EVI(red, blue, nir) :
     return 2.5 * (nir - red) / (nir + 6*red - 7.5*blue + 1)
-
 #Normalized Vegtation Index
 def NDVI(red, nir) :
     return (nir - red) / (nir + red)
-
 #Atmospherically Resistant Vegetation Index
 def ARVI(red, blue, nir) :
     return (nir - 2*red + blue) / (nir + 2*red + blue)
+"""
 
 print("\n----\nDataPreprocessing.py successfully compiled & run.\n-------\n")
 
@@ -46,11 +42,11 @@ print(" -- Datasets loaded.\n")
 train_x_preprocessed = []
 test_x_preprocessed = []
 
-for i in range(100) :
+print(" -- Beginning training dataset preprocessing:")
+for i in range(TRAIN_SIZE) :
 
     #create copies of current image in hsv format to access hue and sat
     train_image_hsv = cv2.cvtColor(train_x[i, :, :, 0:3], cv2.COLOR_RGB2HSV)
-    test_image_hsv = cv2.cvtColor(test_x[i, :, :, 0:3], cv2.COLOR_RGB2HSV)
 
     """ unused training feautes
     #unused means (4)
@@ -95,6 +91,20 @@ for i in range(100) :
         train_val_std
     ])
 
+    #print to keep track of progress
+    if( i % 1000 == 0 ) : print("      * Preprocessed and stored point #" + str(i))
+    
+print(" -- Training dataset (" + str(TRAIN_SIZE) + " entries) preprocessed and stored.")
+#Save test set using dump so we don't have to load in the full dataset in subsequent runs
+joblib.dump(train_x_preprocessed, 'preprocessed/train_x_preprocessed')
+print(" -- Training dataset dumped with joblib.\n")
+
+print(" -- Beginning testing dataset preprocessing:")
+for i in range(TEST_SIZE) :
+
+    #create copies of current image in hsv format to access hue and sat
+    test_image_hsv = cv2.cvtColor(test_x[i, :, :, 0:3], cv2.COLOR_RGB2HSV)
+
     """ unused testing features:
     #unused means (4)
     test_red_mean = np.mean(test_x[i, :, :, 0])
@@ -138,8 +148,13 @@ for i in range(100) :
         test_val_std
     ])
 
-joblib.dump(train_x_preprocessed, 'preprocessed/train_x_preprocessed')
+    #print to keep track of progress
+    if( i % 1000 == 0 ) : print("      * Preprocessed and stored point #" + str(i))
+
+print(" -- Testing dataset (" + str(TEST_SIZE) + " entries) preprocessed and stored.")
+#Save test set using dump so we don't have to load in the full dataset in subsequent runs
 joblib.dump(test_x_preprocessed, 'preprocessed/test_x_preprocessed')
+print(" -- Testing dataset dumped with joblib.\n")
 
 print("-------\nDataPreprocessing.py terminated successfully.\n----\n")
 
