@@ -158,31 +158,4 @@ print(" -- Testing dataset dumped with joblib.\n")
 
 print("-------\nDataPreprocessing.py terminated successfully.\n----\n")
 
-#notes:
-
-#14
-#mean
-#standard deviation
-#variance
-#2nd moment
-#direct cosine transforms
-#correlation
-#co-variance
-#autocorrelation
-#energy
-#entropy
-#homogeneity
-#contrast
-#maximum probability
-#sum
-
-#hue, saturation, intensity (I think this the same as value), 
-#and NIR channels as well as those of the color co-occurrence matrices
-
-#From previous file: "You’re welcome to use the colorsys module to convert from RGB to HSV"
-
 #After this file is run, run ModelTraining.py
-
-#Evan says use hsv instead of rgb, only about 6 features
-#Defnitely serialize
-#Accuracy hopefully over 80%
