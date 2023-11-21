@@ -47,8 +47,8 @@ print(" -- Archive loaded.\n")
 #Declare size of training and testing subsets
 #Dealing with 400K and 100K images will take forever, so do
 #training and testing on small subsets (Andrew did 10K and 2.5K, tune as you need).
-num_training_entries = 10000
-num_testing_entries = 2500
+num_training_entries = MAT_TRAIN_SIZE
+num_testing_entries = MAT_TEST_SIZE
 joblib.dump(num_training_entries, 'loaded/num_training_entries')
 joblib.dump(num_testing_entries, 'loaded/num_testing_entries')
 
