@@ -42,6 +42,7 @@ assert( len(train_x[0]) == len(test_x[0]) )
 
 #Defining a function for MLP to only use when wanted
 def MLP():
+    print(' -- Running MLP model\n')
     #Define the length of feature vectors
     num_features = len(train_x[0])
 
@@ -100,13 +101,14 @@ def MLP():
     print(' -- Model tested, correctly identitifies ' + str(100*correct/TEST_SIZE) + '% of ' 
         + str(TEST_SIZE) + ' test cases.\n' )
 
-    joblib.dump(model, 'model/trained')
-    print(" -- Model dumped with joblib\n")
+    joblib.dump(model, 'model/trainedMLP')
+    print(" -- MLP Model dumped with joblib\n")
 
-#Uncomment the line below to run the MLP model
-#MLP()
+#Run the MLP model
+MLP()
 
 def SVM():
+    print(' -- Running SVM model\n')
     #Defining function to transform the test_y from a N by 4 matrix
     #into a length N array populated with values 0, 1, 2, 3 corresponding to the label of the data
     def labelTransform(arr):
@@ -133,6 +135,8 @@ def SVM():
     #Create SVM model
     model = SVC(decision_function_shape="ovo")
 
+    print(' -- Training model\n')
+
     #Train model
     model.fit(standardized_train_x, transformed_train_y)
 
@@ -150,7 +154,11 @@ def SVM():
             correct += 1
     print(' -- Model tested, correctly identitifies ' + str(100*correct/TEST_SIZE) + '% of ' 
         + str(TEST_SIZE) + ' test cases.\n' )
+    
+    joblib.dump(model, 'model/trainedSVM')
+    print(" -- SVM Model dumped with joblib\n")
 
+#Run the SVM model
 SVM()
 
 print("-------\nModelTraining.py terminated successfully.\n----\n")
