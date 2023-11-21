@@ -1,9 +1,8 @@
 import numpy as np
 import joblib #used for joblib.dump and joblib.load
 import matplotlib.pyplot as plt
-from sklearn.svm import SVC, LinearSVC
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import make_scorer, accuracy_score
+from sklearn.svm import SVC
+from sklearn.preprocessing import StandardScaler
 
 #Have to do something wierd to import torch (ask about this)
 import sys
@@ -118,10 +117,39 @@ def SVM():
 
         return transformed
     
-    transformedY = labelTransform(train_y[:10])
+    #Convert training and testing y values into appropriate shape for sklearn SVM funcitons
+    transformed_train_y = labelTransform(train_y)
+    transformed_test_y = labelTransform(test_y)
 
-    print(train_y[:10])
-    print(transformedY[:10])
+    #Standardize training and testing x values
+    standardizer = StandardScaler()
+
+    #Fit and standardize train_x at the same time
+    standardized_train_x = standardizer.fit_transform(train_x)
+
+    #Standardize test_x
+    standardized_test_x = standardizer.transform(test_x)
+
+    #Create SVM model
+    model = SVC(decision_function_shape="ovo")
+
+    #Train model
+    model.fit(standardized_train_x, transformed_train_y)
+
+    #Make predictions
+    predictions = model.predict(standardized_test_x)
+
+    #Test accuracy
+    
+    #Declare a variable to count how many test cases we correctly identify
+    correct = 0
+
+    #Test model accuracy
+    for i in range(TEST_SIZE) :
+        if(predictions[i] == transformed_test_y[i]) :
+            correct += 1
+    print(' -- Model tested, correctly identitifies ' + str(100*correct/TEST_SIZE) + '% of ' 
+        + str(TEST_SIZE) + ' test cases.\n' )
 
 SVM()
 
