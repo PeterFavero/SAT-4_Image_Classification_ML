@@ -38,65 +38,70 @@ assert( len(test_x) == len(test_y) )
 assert( len(test_x) == TEST_SIZE )
 assert( len(train_x[0]) == len(test_x[0]) ) 
 
-#Define the length of feature vectors
-num_features = len(train_x[0])
+#Defining a function for MLP to only use when wanted
+def MLP():
+    #Define the length of feature vectors
+    num_features = len(train_x[0])
 
-#Declare the model; num_features nueron input -> 50 neuron hidden layer 
-#                   -> 100 neuron hidden layer -> 4 neuron output layer
-model = nn.Sequential(
-    nn.Linear(num_features, 40),
-    nn.ReLU(),
-    nn.Linear(40, 50),
-    nn.ReLU(),
-    nn.Linear(50, 4)
-)
+    #Declare the model; num_features nueron input -> 50 neuron hidden layer 
+    #                   -> 100 neuron hidden layer -> 4 neuron output layer
+    model = nn.Sequential(
+        nn.Linear(num_features, 40),
+        nn.ReLU(),
+        nn.Linear(40, 50),
+        nn.ReLU(),
+        nn.Linear(50, 4)
+    )
 
-#Declare loss, optimizer, and epochs, and batch size
-loss_function = nn.CrossEntropyLoss() #Good for classification
-optimizer = optim.Adam(model.parameters(), lr=0.0005) #Adam optimizer, apparently very popular
-num_epochs = 300
-batch_size = 200
-terminated_early = False
+    #Declare loss, optimizer, and epochs, and batch size
+    loss_function = nn.CrossEntropyLoss() #Good for classification
+    optimizer = optim.Adam(model.parameters(), lr=0.0005) #Adam optimizer, apparently very popular
+    num_epochs = 300
+    batch_size = 200
+    terminated_early = False
 
-print(' -- Beginning model training: max ' + str(num_epochs) + 
-      ' epochs, batch_size = ' + str(batch_size) +'.')
-for epoch in range(num_epochs) :
+    print(' -- Beginning model training: max ' + str(num_epochs) + 
+        ' epochs, batch_size = ' + str(batch_size) +'.')
+    for epoch in range(num_epochs) :
 
-    for i in range(0, TRAIN_SIZE, batch_size) :
+        for i in range(0, TRAIN_SIZE, batch_size) :
+            
+            #Get the set of predicted values from the model for each feature vector in the batch
+            predicted_y = model(torch.FloatTensor(train_x[i:i+batch_size]))
+
+            #Compute loss for this batch
+            loss = loss_function(predicted_y, torch.FloatTensor(train_y[i:i+batch_size]))
+            
+            #Do gradient descent 
+            optimizer.zero_grad() 
+            loss.backward()
+            optimizer.step()
+
+        print('      * Epoch #' + str(epoch) + '\t| loss = ' + str(loss.item()) + '.')
+        if( loss.item() < 0.025 ) :
+            print(' -- Model training terminated by sufficiently low loss ( < 0.025 ):\n    max ' + 
+                str(num_epochs) + ' epochs, batch_size = ' + str(batch_size) +'.')
+            terminated_early = True
+            break
         
-        #Get the set of predicted values from the model for each feature vector in the batch
-        predicted_y = model(torch.FloatTensor(train_x[i:i+batch_size]))
+    if( not terminated_early ) : 
+        print(' -- Model training terminated by epoch limit: ' + str(num_epochs) + 
+        ' epochs, batch_size = ' + str(batch_size) +'.')
 
-        #Compute loss for this batch
-        loss = loss_function(predicted_y, torch.FloatTensor(train_y[i:i+batch_size]))
-        
-        #Do gradient descent 
-        optimizer.zero_grad() 
-        loss.backward()
-        optimizer.step()
+    #Declare a variable to count how many test cases we correctly identify
+    correct = 0
 
-    print('      * Epoch #' + str(epoch) + '\t| loss = ' + str(loss.item()) + '.')
-    if( loss.item() < 0.025 ) :
-        print(' -- Model training terminated by sufficiently low loss ( < 0.025 ):\n    max ' + 
-              str(num_epochs) + ' epochs, batch_size = ' + str(batch_size) +'.')
-        terminated_early = True
-        break
-    
-if( not terminated_early ) : 
-    print(' -- Model training terminated by epoch limit: ' + str(num_epochs) + 
-      ' epochs, batch_size = ' + str(batch_size) +'.')
+    #Test model accuracy
+    for i in range(TEST_SIZE) :
+        if( test_y[i].argmax() == model(torch.FloatTensor(test_x[i])).argmax() ) :
+            correct += 1
+    print(' -- Model tested, correctly identitifies ' + str(100*correct/TEST_SIZE) + '% of ' 
+        + str(TEST_SIZE) + ' test cases.\n' )
 
-#Declare a variable to count how many test cases we correctly identify
-correct = 0
+    joblib.dump(model, 'model/trained')
+    print(" -- Model dumped with joblib\n")
 
-#Test model accuracy
-for i in range(TEST_SIZE) :
-    if( test_y[i].argmax() == model(torch.FloatTensor(test_x[i])).argmax() ) :
-        correct += 1
-print(' -- Model tested, correctly identitifies ' + str(100*correct/TEST_SIZE) + '% of ' 
-      + str(TEST_SIZE) + ' test cases.\n' )
-
-joblib.dump(model, 'model/trained')
-print(" -- Model dumped with joblib\n")
+#Uncomment the line below to run the MLP model
+#MLP()
 
 print("-------\nModelTraining.py terminated successfully.\n----\n")
