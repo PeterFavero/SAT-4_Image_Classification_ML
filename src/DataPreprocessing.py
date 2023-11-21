@@ -25,6 +25,47 @@ def ARVI(red, blue, nir) :
     return (nir - 2*red + blue) / (nir + 2*red + blue)
 """
 
+#Feature vector appending method
+def append_features(preprocessed, image_hsv) :
+     """ unused testing features:
+     previous image_rgbn was passed in as a parameter,
+     where image_rgbn[:, :, 0] = red layer, 
+     image_rgbn[:, :, 1] = blue layer, image_rgbn[:, :, 2] = green layer
+     image_rgbn[:, :, 3] = nir layer
+     #unused means (4)
+     red_mean = np.mean(image_rgbn[:, :, 0])
+     green_mean = np.mean(image_rgbn[:, :, 1])
+     blue_mean = np.mean(image_rgbn[:, :, 2])
+     nir_mean = np.mean(image_rgbn[:, :, 3])
+     #unused standard deviations (4)
+     red_std = np.std(image_rgbn[:, :, 0])
+     green_std = np.std(image_rgbn[:, :, 1])
+     blue_std = np.std(image_rgbn[:, :, 2])
+     nir_std = np.std(image_rgbn[:, :, 3])
+     #unused indexes (3)
+     evi = EVI(red_mean, blue_mean, nir_mean)
+     ndvi = NDVI(red_mean, nir_mean)
+     arvi = ARVI(red_mean, blue_mean, nir_mean)
+     """
+     #computing 6 testing features
+     hue_mean = np.mean(image_hsv[:, :, 0])
+     sat_mean = np.mean(image_hsv[:, :, 1])
+     val_mean = np.mean(image_hsv[:, :, 2])
+     hue_std = np.std(image_hsv[:, :, 0])
+     sat_std = np.std(image_hsv[:, :, 1])
+     val_std = np.std(image_hsv[:, :, 2])
+
+     #append an array containing each testing feature 
+     #to the preprocessed dataset
+     preprocessed.append([
+         hue_mean,
+         sat_mean,
+         val_mean,
+         hue_std,
+         sat_std,
+         val_std
+     ])
+
 print("\n----\nDataPreprocessing.py successfully compiled & run.\n-------\n")
 
 #Load size of training and testing subsets (constant here, do not edit)
@@ -48,48 +89,7 @@ for i in range(TRAIN_SIZE) :
     #create copies of current image in hsv format to access hue and sat
     train_image_hsv = cv2.cvtColor(train_x[i, :, :, 0:3], cv2.COLOR_RGB2HSV)
 
-    """ unused training feautes
-    #unused means (4)
-    train_red_mean = np.mean(train_x[i, :, :, 0])
-    train_green_mean = np.mean(train_x[i, :, :, 1])
-    train_blue_mean = np.mean(train_x[i, :, :, 2])
-    train_nir_mean = np.mean(train_x[i, :, :, 3])
-    #unused standard deviations (4)
-    train_red_std = np.std(train_x[i, :, :, 0])
-    train_green_std = np.std(train_x[i, :, :, 1])
-    train_blue_std = np.std(train_x[i, :, :, 2])
-    train_nir_std = np.std(train_x[i, :, :, 3])
-    #unused indexes (3)
-    train_evi = EVI(train_red_mean, train_blue_mean, train_nir_mean)
-    train_ndvi = NDVI(train_red_mean, train_nir_mean)
-    train_arvi = ARVI(train_red_mean, train_blue_mean, train_nir_mean)
-    #unused intensity (1)
-    train_int = (train_red_mean + train_green_mean + train_blue_mean + train_nir_mean)
-    #standardize means on a scale from 0 to 1 by multiplying each of them by 1/intensity
-    train_red_mean /= train_int
-    train_green_mean /= train_int
-    train_blue_mean /= train_int
-    train_nir_mean /= train_int
-    """
-
-    #compute training 6 features 
-    train_hue_mean = np.mean(train_image_hsv[:, :, 0])
-    train_sat_mean = np.mean(train_image_hsv[:, :, 1])
-    train_val_mean = np.mean(train_image_hsv[:, :, 2])
-    train_hue_std = np.std(train_image_hsv[:, :, 0])
-    train_sat_std = np.std(train_image_hsv[:, :, 1])
-    train_val_std = np.std(train_image_hsv[:, :, 2])
-
-    #append an array containing each training feature 
-    #to the preprocessed training dataset
-    train_x_preprocessed.append([
-        train_hue_mean,
-        train_sat_mean,
-        train_val_mean,
-        train_hue_std,
-        train_sat_std,
-        train_val_std
-    ])
+    append_features(train_x_preprocessed, train_image_hsv)
 
     #print to keep track of progress
     if( i % 1000 == 0 ) : print("      * Preprocessed and stored point #" + str(i))
@@ -105,48 +105,7 @@ for i in range(TEST_SIZE) :
     #create copies of current image in hsv format to access hue and sat
     test_image_hsv = cv2.cvtColor(test_x[i, :, :, 0:3], cv2.COLOR_RGB2HSV)
 
-    """ unused testing features:
-    #unused means (4)
-    test_red_mean = np.mean(test_x[i, :, :, 0])
-    test_green_mean = np.mean(test_x[i, :, :, 1])
-    test_blue_mean = np.mean(test_x[i, :, :, 2])
-    test_nir_mean = np.mean(test_x[i, :, :, 3])
-    #unused standard deviations (4)
-    test_red_std = np.std(test_x[i, :, :, 0])
-    test_green_std = np.std(test_x[i, :, :, 1])
-    test_blue_std = np.std(test_x[i, :, :, 2])
-    test_nir_std = np.std(test_x[i, :, :, 3])
-    #unused indexes (3)
-    test_evi = EVI(test_red_mean, test_blue_mean, test_nir_mean)
-    test_ndvi = NDVI(test_red_mean, test_nir_mean)
-    test_arvi = ARVI(test_red_mean, test_blue_mean, test_nir_mean)
-    #unused intensity (1)
-    test_int = (test_red_mean + test_green_mean + test_blue_mean + test_nir_mean)
-    #standardize means on a scale from 0 to 1 by multiplying each of them by 1/intensity
-    test_red_mean /= test_int
-    test_green_mean /= test_int
-    test_blue_mean /= test_int
-    test_nir_mean /= test_int
-    """
-
-    #computing 6 testing features
-    test_hue_mean = np.mean(test_image_hsv[:, :, 0])
-    test_sat_mean = np.mean(test_image_hsv[:, :, 1])
-    test_val_mean = np.mean(test_image_hsv[:, :, 2])
-    test_hue_std = np.std(test_image_hsv[:, :, 0])
-    test_sat_std = np.std(test_image_hsv[:, :, 1])
-    test_val_std = np.std(test_image_hsv[:, :, 2])
-
-    #append an array containing each testing feature 
-    #to the preprocessed testing dataset
-    test_x_preprocessed.append([
-        test_hue_mean,
-        test_sat_mean,
-        test_val_mean,
-        test_hue_std,
-        test_sat_std,
-        test_val_std
-    ])
+    append_features(test_x_preprocessed, test_image_hsv)
 
     #print to keep track of progress
     if( i % 1000 == 0 ) : print("      * Preprocessed and stored point #" + str(i))
