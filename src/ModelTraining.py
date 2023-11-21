@@ -1,6 +1,9 @@
 import numpy as np
 import joblib #used for joblib.dump and joblib.load
 import matplotlib.pyplot as plt
+from sklearn.svm import SVC, LinearSVC
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import make_scorer, accuracy_score
 
 #Have to do something wierd to import torch (ask about this)
 import sys
@@ -103,5 +106,23 @@ def MLP():
 
 #Uncomment the line below to run the MLP model
 #MLP()
+
+def SVM():
+    #Defining function to transform the test_y from a N by 4 matrix
+    #into a length N array populated with values 0, 1, 2, 3 corresponding to the label of the data
+    def labelTransform(arr):
+        arr = arr.tolist()
+        transformed = []
+        for subarr in arr:
+            transformed.append(subarr.index(1))
+
+        return transformed
+    
+    transformedY = labelTransform(train_y[:10])
+
+    print(train_y[:10])
+    print(transformedY[:10])
+
+SVM()
 
 print("-------\nModelTraining.py terminated successfully.\n----\n")
