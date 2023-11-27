@@ -46,6 +46,8 @@ def MLP():
     #Define the length of feature vectors
     num_features = len(train_x[0])
 
+    print(num_features)
+
     #Declare the model; num_features nueron input -> 50 neuron hidden layer 
     #                   -> 100 neuron hidden layer -> 4 neuron output layer
     model = nn.Sequential(
@@ -105,7 +107,7 @@ def MLP():
     print(" -- MLP Model dumped with joblib\n")
 
 #Run the MLP model
-# MLP()
+MLP()
 
 def SVM(c_value):
     print(' -- Running SVM model\n')
@@ -135,8 +137,6 @@ def SVM(c_value):
     #Create SVM model
     model = SVC(decision_function_shape="ovo", kernel="rbf", C=c_value)
 
-    # print(model.get_params())
-
     print(' -- Training model\n')
 
     #Train model
@@ -158,7 +158,7 @@ def SVM(c_value):
         + str(TEST_SIZE) + ' test cases.\n' )
     
     #Only dump on the most accurate c value
-    if(c_value == 230):
+    if(c_value == 290):
         joblib.dump(model, 'model/trainedSVM')
         print(" -- SVM Model dumped with joblib\n")
 

@@ -26,7 +26,7 @@ def ARVI(red, blue, nir) :
 """
 
 #Feature vector appending method
-def append_features(preprocessed, image_hsv) :
+def append_features(preprocessed, image_hsv, image_rgbn) :
      """ unused testing features:
      previous image_rgbn was passed in as a parameter,
      where image_rgbn[:, :, 0] = red layer, 
@@ -55,15 +55,20 @@ def append_features(preprocessed, image_hsv) :
      sat_std = np.std(image_hsv[:, :, 1])
      val_std = np.std(image_hsv[:, :, 2])
 
+     nir_mean = np.mean(image_rgbn[:, :, 3])
+     nir_std = np.std(image_rgbn[:, :, 3])
+
      #append an array containing each testing feature 
      #to the preprocessed dataset
      preprocessed.append([
          hue_mean,
          sat_mean,
          val_mean,
+         nir_mean,
          hue_std,
          sat_std,
-         val_std
+         val_std,
+         nir_std
      ])
 
 print("\n----\nDataPreprocessing.py successfully compiled & run.\n-------\n")
@@ -89,7 +94,7 @@ for i in range(TRAIN_SIZE) :
     #create copies of current image in hsv format to access hue and sat
     train_image_hsv = cv2.cvtColor(train_x[i, :, :, 0:3], cv2.COLOR_RGB2HSV)
 
-    append_features(train_x_preprocessed, train_image_hsv)
+    append_features(train_x_preprocessed, train_image_hsv, train_x[i])
 
     #print to keep track of progress
     if( i % 1000 == 0 ) : print("      * Preprocessed and stored point #" + str(i))
@@ -105,7 +110,7 @@ for i in range(TEST_SIZE) :
     #create copies of current image in hsv format to access hue and sat
     test_image_hsv = cv2.cvtColor(test_x[i, :, :, 0:3], cv2.COLOR_RGB2HSV)
 
-    append_features(test_x_preprocessed, test_image_hsv)
+    append_features(test_x_preprocessed, test_image_hsv, test_x[i])
 
     #print to keep track of progress
     if( i % 1000 == 0 ) : print("      * Preprocessed and stored point #" + str(i))
