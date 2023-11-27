@@ -164,33 +164,37 @@ def SVM(c_value):
 
     return 100*correct/TEST_SIZE
 
-# #Create visualization of SVM using C values of 0.1, 1, 10, 100, 1000, 10000
-# c_values = []
-# percentages = []
+#Create visualization of SVM using C values of 0.1, 1, 10, 100, 1000, 10000
+c_values = []
+percentages = []
 
-# for c_multiplier in range(-1, 5):
-#     #Set value of c to 10^c_multiplier
-#     c_value = 10 ** c_multiplier
+for c_multiplier in range(-1, 5):
+    #Set value of c to 10^c_multiplier
+    c_value = 10 ** c_multiplier
 
-#     print(f'----- Testing C value of {c_value} -----\n')
+    print(f'----- Testing C value of {c_value} -----\n')
 
-#     #Run the SVM model
-#     percentage = SVM(c_value)
+    #Run the SVM model
+    percentage = SVM(c_value)
 
-#     c_values.append(c_value)
-#     percentages.append(percentage)
+    c_values.append(c_value)
+    percentages.append(percentage)
 
-# fig, ax = plt.subplots(layout="constrained")
+fig, ax = plt.subplots(layout="constrained")
 
-# ax.scatter(c_values, percentages)
+ax.plot(c_values, percentages, marker=".", markersize=10)
 
-# ax.set_xlabel("C Value (Log Base 10 Scale)")
-# ax.set_ylabel("Percentage Correct (%)")
-# ax.set_title("C Value vs. Percentage Correct (%)")
+ax.set_xlabel("C Value (Log Base 10 Scale)")
+ax.set_ylabel("Percentage Correct (%)")
+ax.set_title("C Value vs. Percentage Correct (%)")
 
-# ax.set_xscale("log", base=10)
+ax.set_xscale("log", base=10)
 
-# plt.show()
+plt.savefig("visualizations/C Values 1.png")
+
+print("--- Saved Figure ---\n")
+
+plt.clf()
 
 #Narrowed down search space using previous graph
 #Create visualization of SVM using c values of 200 - 300 with step size 10
@@ -212,6 +216,8 @@ plt.xlabel("C Values")
 plt.ylabel("Percentage Correct (%)")
 plt.title("C Value vs. Percentage Correct (%)")
 
-plt.show()
+plt.savefig("visualizations/C Values 2.png")
+
+print("--- Saved Figure ---\n")
 
 print("-------\nModelTraining.py terminated successfully.\n----\n")
