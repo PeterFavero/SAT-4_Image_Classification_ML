@@ -105,9 +105,9 @@ def MLP():
     print(" -- MLP Model dumped with joblib\n")
 
 #Run the MLP model
-MLP()
+# MLP()
 
-def SVM():
+def SVM(c_value):
     print(' -- Running SVM model\n')
     #Defining function to transform the test_y from a N by 4 matrix
     #into a length N array populated with values 0, 1, 2, 3 corresponding to the label of the data
@@ -133,7 +133,9 @@ def SVM():
     standardized_test_x = standardizer.transform(test_x)
 
     #Create SVM model
-    model = SVC(decision_function_shape="ovo")
+    model = SVC(decision_function_shape="ovo", kernel="rbf", C=c_value)
+
+    # print(model.get_params())
 
     print(' -- Training model\n')
 
@@ -155,10 +157,61 @@ def SVM():
     print(' -- Model tested, correctly identitifies ' + str(100*correct/TEST_SIZE) + '% of ' 
         + str(TEST_SIZE) + ' test cases.\n' )
     
-    joblib.dump(model, 'model/trainedSVM')
-    print(" -- SVM Model dumped with joblib\n")
+    #Only dump on the most accurate c value
+    if(c_value == 230):
+        joblib.dump(model, 'model/trainedSVM')
+        print(" -- SVM Model dumped with joblib\n")
 
-#Run the SVM model
-SVM()
+    return 100*correct/TEST_SIZE
+
+# #Create visualization of SVM using C values of 0.1, 1, 10, 100, 1000, 10000
+# c_values = []
+# percentages = []
+
+# for c_multiplier in range(-1, 5):
+#     #Set value of c to 10^c_multiplier
+#     c_value = 10 ** c_multiplier
+
+#     print(f'----- Testing C value of {c_value} -----\n')
+
+#     #Run the SVM model
+#     percentage = SVM(c_value)
+
+#     c_values.append(c_value)
+#     percentages.append(percentage)
+
+# fig, ax = plt.subplots(layout="constrained")
+
+# ax.scatter(c_values, percentages)
+
+# ax.set_xlabel("C Value (Log Base 10 Scale)")
+# ax.set_ylabel("Percentage Correct (%)")
+# ax.set_title("C Value vs. Percentage Correct (%)")
+
+# ax.set_xscale("log", base=10)
+
+# plt.show()
+
+#Narrowed down search space using previous graph
+#Create visualization of SVM using c values of 200 - 300 with step size 10
+c_values = []
+percentages = []
+
+for c_value in range(200, 310, 10):
+    print(f'----- Testing c value of {c_value} -----\n')
+
+    #Run the SVM model
+    percentage = SVM(c_value)
+
+    c_values.append(c_value)
+    percentages.append(percentage)
+
+plt.plot(c_values, percentages)
+
+plt.xlabel("C Values")
+plt.ylabel("Percentage Correct (%)")
+plt.title("C Value vs. Percentage Correct (%)")
+
+plt.show()
 
 print("-------\nModelTraining.py terminated successfully.\n----\n")
