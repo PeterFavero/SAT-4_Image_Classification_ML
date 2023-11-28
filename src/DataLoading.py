@@ -33,6 +33,7 @@ Your task is to develop two classifiers, SVMs and MLPs, as accurate as you can.
 import numpy as np
 import scipy
 import joblib #used for joblib.dump and joblib.load
+np.random.seed(10)
 
 print("\n----\nDataLoading.py successfully compiled & run.\n-------\n")
 
