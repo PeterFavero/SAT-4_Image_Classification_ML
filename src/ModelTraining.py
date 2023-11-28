@@ -11,7 +11,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as functional
 from torch import optim
-torch.manual_seed(5)
+torch.manual_seed(10)
 
 # TASK: TRAIN YOUR MODEL
 # You have your feature vectors now, time to train.
@@ -39,13 +39,14 @@ assert( len(test_x) == len(test_y) )
 assert( len(test_x) == TEST_SIZE )
 assert( len(train_x[0]) == len(test_x[0]) ) 
 
-#Defining a function for MLP to only use when wanted
+#Defining a function for MLP.
+#If you run this as is with torch.manual_seed(10) as above and the parameters listed below, you 
+#should get a model with ≈ 99.4% accuracy in a little over 1000 epoches, about 20 minutes of training
+#on my machine (Macbook air w/ M2 chip)
 def MLP():
     print(' -- Running MLP model: TRAIN_SIZE = ' + str(TRAIN_SIZE) + ' TEST_SIZE = ' + str(TEST_SIZE) + '.\n')
     #Define the length of feature vectors
     num_features = len(train_x[0])
-
-    print(num_features)
 
     #Declare the model; num_features nueron input -> 50 neuron hidden layer 
     #                   -> 100 neuron hidden layer -> 4 neuron output layer
@@ -60,7 +61,7 @@ def MLP():
     #Declare loss, optimizer, and epochs, and batch size
     loss_function = nn.CrossEntropyLoss() #Good for classification
     optimizer = optim.Adam(model.parameters(), lr=0.00025) #Adam optimizer, apparently very popular
-    num_epochs = 1500
+    num_epochs = 10000
     batch_size = 200
     terminated_early = False
 
@@ -89,8 +90,8 @@ def MLP():
         losses.append(loss.item())
 
         print('      * Epoch #' + str(epoch) + '\t| loss = ' + str(loss.item()) + '.')
-        if( loss.item() < 0 ) :
-            print(' -- Model training terminated by sufficiently low loss ( < 0 ):\n    max ' + 
+        if( loss.item() < 0.001 ) :
+            print(' -- Model training terminated by sufficiently low loss ( < 0.001 ):\n    max ' + 
                 str(num_epochs) + ' epochs, batch_size = ' + str(batch_size) +'.')
             terminated_early = True
             break
@@ -114,14 +115,15 @@ def MLP():
 
     plt.plot(epoches, losses)
     plt.xlabel("Epoches")
-    plt.ylabel("Losses")
-    plt.title("Losses vs. Epoches")
+    plt.ylabel("Loss")
+    plt.title("Loss vs. Epoches")
 
     plt.savefig("visualizations/MLP_visualization.png")
 
 #Run the MLP model
 MLP()
 
+#Define a function for SVM
 def SVM(c_value):
     print(' -- Running SVM model: TRAIN_SIZE = ' + str(TRAIN_SIZE) + ' TEST_SIZE = ' + str(TEST_SIZE) + '.\n')
     #Defining function to transform the test_y from a N by 4 matrix
