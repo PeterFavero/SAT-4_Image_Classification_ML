@@ -11,8 +11,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as functional
 from torch import optim
-
-
+torch.manual_seed(5)
 
 # TASK: TRAIN YOUR MODEL
 # You have your feature vectors now, time to train.
@@ -42,7 +41,7 @@ assert( len(train_x[0]) == len(test_x[0]) )
 
 #Defining a function for MLP to only use when wanted
 def MLP():
-    print(' -- Running MLP model\n')
+    print(' -- Running MLP model: TRAIN_SIZE = ' + str(TRAIN_SIZE) + ' TEST_SIZE = ' + str(TEST_SIZE) + '.\n')
     #Define the length of feature vectors
     num_features = len(train_x[0])
 
@@ -60,10 +59,14 @@ def MLP():
 
     #Declare loss, optimizer, and epochs, and batch size
     loss_function = nn.CrossEntropyLoss() #Good for classification
-    optimizer = optim.Adam(model.parameters(), lr=0.0005) #Adam optimizer, apparently very popular
-    num_epochs = 300
+    optimizer = optim.Adam(model.parameters(), lr=0.00025) #Adam optimizer, apparently very popular
+    num_epochs = 1500
     batch_size = 200
     terminated_early = False
+
+    #For visualization
+    epoches = []
+    losses = []
 
     print(' -- Beginning model training: max ' + str(num_epochs) + 
         ' epochs, batch_size = ' + str(batch_size) +'.')
@@ -82,9 +85,12 @@ def MLP():
             loss.backward()
             optimizer.step()
 
+        epoches.append(epoch)
+        losses.append(loss.item())
+
         print('      * Epoch #' + str(epoch) + '\t| loss = ' + str(loss.item()) + '.')
         if( loss.item() < 0 ) :
-            print(' -- Model training terminated by sufficiently low loss ( < 0.025 ):\n    max ' + 
+            print(' -- Model training terminated by sufficiently low loss ( < 0 ):\n    max ' + 
                 str(num_epochs) + ' epochs, batch_size = ' + str(batch_size) +'.')
             terminated_early = True
             break
@@ -106,11 +112,18 @@ def MLP():
     joblib.dump(model, 'model/trainedMLP')
     print(" -- MLP Model dumped with joblib\n")
 
+    plt.plot(epoches, losses)
+    plt.xlabel("Epoches")
+    plt.ylabel("Losses")
+    plt.title("Losses vs. Epoches")
+
+    plt.savefig("visualizations/MLP_visualization.png")
+
 #Run the MLP model
 MLP()
 
 def SVM(c_value):
-    print(' -- Running SVM model\n')
+    print(' -- Running SVM model: TRAIN_SIZE = ' + str(TRAIN_SIZE) + ' TEST_SIZE = ' + str(TEST_SIZE) + '.\n')
     #Defining function to transform the test_y from a N by 4 matrix
     #into a length N array populated with values 0, 1, 2, 3 corresponding to the label of the data
     def labelTransform(arr):
@@ -190,7 +203,7 @@ ax.set_title("C Value vs. Percentage Correct (%)")
 
 ax.set_xscale("log", base=10)
 
-plt.savefig("visualizations/C Values 1.png")
+plt.savefig("visualizations/SVM_Visualization.png")
 
 print("--- Saved Figure ---\n")
 

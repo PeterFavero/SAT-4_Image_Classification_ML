@@ -13,7 +13,7 @@ import numpy as np
 import joblib #used for joblib.dump and joblib.load
 import cv2
 
-""" unused feature calculation methods
+#Feature calculation methods
 #Enhanced Vegetation Index
 def EVI(red, blue, nir) :
     return 2.5 * (nir - red) / (nir + 6*red - 7.5*blue + 1)
@@ -23,30 +23,14 @@ def NDVI(red, nir) :
 #Atmospherically Resistant Vegetation Index
 def ARVI(red, blue, nir) :
     return (nir - 2*red + blue) / (nir + 2*red + blue)
-"""
 
 #Feature vector appending method
 def append_features(preprocessed, image_hsv, image_rgbn) :
-     """ unused testing features:
-     previous image_rgbn was passed in as a parameter,
-     where image_rgbn[:, :, 0] = red layer, 
-     image_rgbn[:, :, 1] = blue layer, image_rgbn[:, :, 2] = green layer
-     image_rgbn[:, :, 3] = nir layer
-     #unused means (4)
+     
+     #means used to compute later features
      red_mean = np.mean(image_rgbn[:, :, 0])
-     green_mean = np.mean(image_rgbn[:, :, 1])
      blue_mean = np.mean(image_rgbn[:, :, 2])
-     nir_mean = np.mean(image_rgbn[:, :, 3])
-     #unused standard deviations (4)
-     red_std = np.std(image_rgbn[:, :, 0])
-     green_std = np.std(image_rgbn[:, :, 1])
-     blue_std = np.std(image_rgbn[:, :, 2])
-     nir_std = np.std(image_rgbn[:, :, 3])
-     #unused indexes (3)
-     evi = EVI(red_mean, blue_mean, nir_mean)
-     ndvi = NDVI(red_mean, nir_mean)
-     arvi = ARVI(red_mean, blue_mean, nir_mean)
-     """
+     
      #computing 6 testing features
      hue_mean = np.mean(image_hsv[:, :, 0])
      sat_mean = np.mean(image_hsv[:, :, 1])
@@ -58,6 +42,10 @@ def append_features(preprocessed, image_hsv, image_rgbn) :
      nir_mean = np.mean(image_rgbn[:, :, 3])
      nir_std = np.std(image_rgbn[:, :, 3])
 
+     evi = EVI(red_mean, blue_mean, nir_mean)
+     ndvi = NDVI(red_mean, nir_mean)
+     arvi = ARVI(red_mean, blue_mean, nir_mean)
+
      #append an array containing each testing feature 
      #to the preprocessed dataset
      preprocessed.append([
@@ -68,7 +56,10 @@ def append_features(preprocessed, image_hsv, image_rgbn) :
          hue_std,
          sat_std,
          val_std,
-         nir_std
+         nir_std,
+         evi, 
+         ndvi,
+         arvi, 
      ])
 
 print("\n----\nDataPreprocessing.py successfully compiled & run.\n-------\n")
@@ -121,5 +112,3 @@ joblib.dump(test_x_preprocessed, 'preprocessed/test_x_preprocessed')
 print(" -- Testing dataset dumped with joblib.\n")
 
 print("-------\nDataPreprocessing.py terminated successfully.\n----\n")
-
-#After this file is run, run ModelTraining.py
