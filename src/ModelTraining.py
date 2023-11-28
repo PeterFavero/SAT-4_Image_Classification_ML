@@ -83,7 +83,7 @@ def MLP():
             optimizer.step()
 
         print('      * Epoch #' + str(epoch) + '\t| loss = ' + str(loss.item()) + '.')
-        if( loss.item() < 0.025 ) :
+        if( loss.item() < 0 ) :
             print(' -- Model training terminated by sufficiently low loss ( < 0.025 ):\n    max ' + 
                 str(num_epochs) + ' epochs, batch_size = ' + str(batch_size) +'.')
             terminated_early = True
@@ -158,17 +158,17 @@ def SVM(c_value):
         + str(TEST_SIZE) + ' test cases.\n' )
     
     #Only dump on the most accurate c value
-    if(c_value == 290):
+    if(c_value == 100000):
         joblib.dump(model, 'model/trainedSVM')
         print(" -- SVM Model dumped with joblib\n")
 
     return 100*correct/TEST_SIZE
 
-#Create visualization of SVM using C values of 0.1, 1, 10, 100, 1000, 10000
+#Create visualization of SVM using C values of 0.1, 1, 10, 100, 1000, 10000, 100000
 c_values = []
 percentages = []
 
-for c_multiplier in range(-1, 5):
+for c_multiplier in range(-1, 6):
     #Set value of c to 10^c_multiplier
     c_value = 10 ** c_multiplier
 
@@ -191,32 +191,6 @@ ax.set_title("C Value vs. Percentage Correct (%)")
 ax.set_xscale("log", base=10)
 
 plt.savefig("visualizations/C Values 1.png")
-
-print("--- Saved Figure ---\n")
-
-plt.clf()
-
-#Narrowed down search space using previous graph
-#Create visualization of SVM using c values of 200 - 300 with step size 10
-c_values = []
-percentages = []
-
-for c_value in range(200, 310, 10):
-    print(f'----- Testing c value of {c_value} -----\n')
-
-    #Run the SVM model
-    percentage = SVM(c_value)
-
-    c_values.append(c_value)
-    percentages.append(percentage)
-
-plt.plot(c_values, percentages)
-
-plt.xlabel("C Values")
-plt.ylabel("Percentage Correct (%)")
-plt.title("C Value vs. Percentage Correct (%)")
-
-plt.savefig("visualizations/C Values 2.png")
 
 print("--- Saved Figure ---\n")
 
