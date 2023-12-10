@@ -4,10 +4,6 @@ import joblib
 import numpy as np
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
-
-#On my machine, I have to do something wierd to import torch
-import sys
-sys.path.append('/Users/2.peterfaveroproductive/Library/Python/3.9/lib/python/site-packages')
 import torch
 
 if( os.listdir('model') != ['trainedMLP', 'trainedSVM'] ) :
