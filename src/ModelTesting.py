@@ -35,6 +35,8 @@ test_y = np.array( joblib.load('loaded/test_y_loaded') ) # TRAIN_SIZE x 4
 model_MLP = joblib.load('model/trainedMLP')
 model_SVM = joblib.load('model/trainedSVM')
 
+print(" -- Datasets and models loaded.\n")
+
 #Declare a variable to count how many MLP test cases we correctly identify
 correct_MLP = 0
 
