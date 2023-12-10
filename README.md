@@ -1,6 +1,6 @@
 # SAT-4 Image Classification Project
 
-Welcome to the SAT-4 Image Classification project repository! This project focuses on image classification using Multilayer-Perceptron (MLP) and Support Vector Machine (SVM) models on the [SAT-4 Airborne Dataset](https://www.kaggle.com/crawford/deepsat-sat4) from Kaggle.
+This project focuses on high-accuracy image classification using Multilayer-Perceptron (MLP) and Support Vector Machine (SVM) models on the [SAT-4 Airborne Dataset](https://www.kaggle.com/crawford/deepsat-sat4) from Kaggle.
 
 ## Setup Instructions
 
