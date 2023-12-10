@@ -8,8 +8,8 @@ import torch
 
 if( os.listdir('model') != ['trainedMLP', 'trainedSVM'] ) :
     #run through DataLoading, DataPreprocessing, and ModelTraining as 
-    #nescessary if both models aren't properly saved at this point.
-    import run
+    #if both models aren't properly saved at this point.
+    import RunAll
 
 #Defining function to transform the test_y from a N by 4 matrix
 #into a length N array populated with values 0, 1, 2, 3 corresponding to the label of the data
