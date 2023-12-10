@@ -37,8 +37,9 @@ assert( len(train_x[0]) == len(test_x[0]) )
 
 #Defining a function for MLP.
 #If you run this as is with torch.manual_seed(10) as above and the parameters listed below, you 
-#should get a model with 99.711% accuracy in 2403 epoches, about an hour of training
-#on my machine (Macbook air w/ M2 chip)
+#should get a model with 99.711% accuracy in 2403 epoches. Feel free to change the manual seed, but note that may result in 
+#a much longer training time as some test runs went to several thousand epoches or more
+#before achieving sufficiently low loss to terminate.
 def MLP():
     print(' -- Training MLP model: TRAIN_SIZE = ' + str(TRAIN_SIZE) + ' TEST_SIZE = ' + str(TEST_SIZE) + '.\n')
     #Define the length of feature vectors
