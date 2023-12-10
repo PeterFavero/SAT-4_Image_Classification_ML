@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 
-#Have to do something wierd to import torch (ask about this)
+#On my machine, I have to do something wierd to import torch 
 import sys
 sys.path.append('/Users/2.peterfaveroproductive/Library/Python/3.9/lib/python/site-packages')
 import torch
@@ -13,11 +13,7 @@ import torch.nn.functional as functional
 from torch import optim
 torch.manual_seed(10)
 
-# TASK: TRAIN YOUR MODEL
-# You have your feature vectors now, time to train.
-# Again, train two models: SVM and MLP.
-# Make them as accurate as possible. Tune your hyperparameters.
-# Check for overfitting and other potential flaws as well.
+#TASK: TRAIN MODELS
 
 print("\n----\nModelTraining.py successfully compiled & run.\n-------\n")
 
@@ -44,7 +40,7 @@ assert( len(train_x[0]) == len(test_x[0]) )
 #should get a model with 99.711% accuracy in 2403 epoches, about an hour of training
 #on my machine (Macbook air w/ M2 chip)
 def MLP():
-    print(' -- Running MLP model: TRAIN_SIZE = ' + str(TRAIN_SIZE) + ' TEST_SIZE = ' + str(TEST_SIZE) + '.\n')
+    print(' -- Training MLP model: TRAIN_SIZE = ' + str(TRAIN_SIZE) + ' TEST_SIZE = ' + str(TEST_SIZE) + '.\n')
     #Define the length of feature vectors
     num_features = len(train_x[0])
 
@@ -107,7 +103,7 @@ def MLP():
     for i in range(TEST_SIZE) :
         if( test_y[i].argmax() == model(torch.FloatTensor(test_x[i])).argmax() ) :
             correct += 1
-    print(' -- Model tested, correctly identitifies ' + str(100*correct/TEST_SIZE) + '% of ' 
+    print(' -- MLP Model tested, correctly identitifies ' + str(100*correct/TEST_SIZE) + '% of ' 
         + str(TEST_SIZE) + ' test cases.\n' )
 
     joblib.dump(model, 'model/trainedMLP')
@@ -125,7 +121,7 @@ MLP()
 
 #Define a function for SVM
 def SVM(c_value):
-    print(' -- Running SVM model: TRAIN_SIZE = ' + str(TRAIN_SIZE) + ' TEST_SIZE = ' + str(TEST_SIZE) + '.\n')
+    print(' -- Training SVM model: TRAIN_SIZE = ' + str(TRAIN_SIZE) + ' TEST_SIZE = ' + str(TEST_SIZE) + '.\n')
     #Defining function to transform the test_y from a N by 4 matrix
     #into a length N array populated with values 0, 1, 2, 3 corresponding to the label of the data
     def labelTransform(arr):
@@ -133,7 +129,6 @@ def SVM(c_value):
         transformed = []
         for subarr in arr:
             transformed.append(subarr.index(1))
-
         return transformed
     
     #Convert training and testing y values into appropriate shape for sklearn SVM funcitons
@@ -152,8 +147,6 @@ def SVM(c_value):
     #Create SVM model
     model = SVC(decision_function_shape="ovo", kernel="rbf", C=c_value)
 
-    print(' -- Training model\n')
-
     #Train model
     model.fit(standardized_train_x, transformed_train_y)
 
@@ -169,7 +162,7 @@ def SVM(c_value):
     for i in range(TEST_SIZE) :
         if(predictions[i] == transformed_test_y[i]) :
             correct += 1
-    print(' -- Model tested, correctly identitifies ' + str(100*correct/TEST_SIZE) + '% of ' 
+    print(' -- SVM Model tested, correctly identitifies ' + str(100*correct/TEST_SIZE) + '% of ' 
         + str(TEST_SIZE) + ' test cases.\n' )
     
     #Only dump on the most accurate c value
@@ -187,7 +180,7 @@ for c_multiplier in range(-1, 6):
     #Set value of c to 10^c_multiplier
     c_value = 10 ** c_multiplier
 
-    print(f'----- Testing C value of {c_value} -----\n')
+    print(f' -- Testing C value of {c_value}:')
 
     #Run the SVM model
     percentage = SVM(c_value)
@@ -205,7 +198,7 @@ ax.set_title("C Value vs. Percentage Correct (%)")
 
 ax.set_xscale("log", base=10)
 
-plt.savefig("visualizations/SVM_Visualization.png")
+plt.savefig("visualizations/SVM_visualization.png")
 
 print("--- Saved Figure ---\n")
 

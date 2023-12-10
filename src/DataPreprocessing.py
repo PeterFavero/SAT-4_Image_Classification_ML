@@ -1,17 +1,10 @@
-# TASK: Pre-processing
-# You need to figure out how to pass in the images as feature vectors to the models.
-# You should not simply pass in the entire image as a flattened vector;
-# otherwise, it's very slow and just not really effective
-# Instead you should extract relevant features from the images.
-# Refer to Section 4.1 of https://arxiv.org/abs/1509.03602, especially first three sentences
-# and consider what features you want to extract
-# And like the previous task, once you have your pre-processed feature vectors,
-# you may want to dump and load because pre-processing will also take a while each time.
-# MAKE SURE TO PRE-PROCESS YOUR TEST SET AS WELL!
-
 import numpy as np
 import joblib #used for joblib.dump and joblib.load
 import cv2
+
+#TASK: Pre-Processing x datasets into feature vectors
+#Sources some useful indices from this paper:
+#https://arxiv.org/abs/1509.03602
 
 #Feature calculation methods
 #Enhanced Vegetation Index

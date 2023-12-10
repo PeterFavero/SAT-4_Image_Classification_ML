@@ -1,17 +1,14 @@
 '''
-HW: Satellite Image Classification
-You may work on this assignment with ONE partner.
-
-We use the SAT-4 Airborne Dataset: https://www.kaggle.com/datasets/crawford/deepsat-sat4.
-Download "sat-4-full.mat" from Kaggle and place it in your working dir.
+This model uses the SAT-4 Airborne Dataset: https://www.kaggle.com/datasets/crawford/deepsat-sat4.
+Download "sat-4-full.mat" from Kaggle and place it in your directory inside a folder 'archive' to run the model.
 
 This dataset is large (500K satellite imgs of the Earth's surface).
-Each img is 28x28 with 4 channels: red, green, blue, and NIR (near-infrared).
-The imgs are labeled to the following 4 classes: 
+Each image is 28x28 with 4 channels: red, green, blue, and NIR (near-infrared).
+The images are labeled to the following 4 classes: 
 barren land | trees | grassland | none
 
 The MAT file from Kaggle contains 5 variables:
-- annotations (explore this if you want to)
+- annotations
 - train_x (400K training images), dim: (28, 28, 4, 400000)
 - train_y (400k training labels), dim: (4, 400000)
 - test_x (100K test images), dim: (28, 28, 4, 100000)
@@ -22,12 +19,10 @@ For inputs (train_x and test_x):
 2nd dim describes the channel (RGB and NIR where R = 0, G = 1, B = 2, NIR = 3).
 3rd dim encodes the index of the image.
 
-Labels (train_y and test_y) are "one-hot encoded" (look this up).
+Labels (train_y and test_y) are one-hot encoded.
 
-Your task is to develop two classifiers, SVMs and MLPs, as accurate as you can.
+This model consists of two classifiers, MLP and SVM, each at > 99% accuracy.
 '''
-
-#Run this first
 
 #Import nescessary libraries
 import numpy as np
