@@ -6,4 +6,4 @@ WORKDIR usr/app
 COPY . .
 
 RUN pip install -r requirements.txt
-CMD python3 src/DataLoading.py; python3 src/DataPreprocessing.py; python3 src/ModelTraining.py
+CMD python3 src/RunAll.py;

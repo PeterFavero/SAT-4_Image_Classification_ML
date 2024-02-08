@@ -16,8 +16,9 @@ print("\n----\nMLPTraining.py successfully compiled & run.\n-------\n")
 #should get a model with 99.711% accuracy in 2403 epoches.
 def MLP():
 
-    #Define device to perform training on (testing integrating this mps right now in my own branch, currently works best on Cuda, MPS is slower than CPU)
-    device_string = 'cuda' if torch.cuda.is_available() else 'cpu'
+    #Define device to perform training on (testing integrating this mps right now in my own branch, currently works best on CPU based on 
+    #small optimization as opposed to Cuda and MPS, overhead is an issue)
+    device_string = 'cpu'
     device = torch.device(device_string)
 
     #Load size of training and testing subsets (constant here, do not edit)
@@ -25,13 +26,13 @@ def MLP():
     TEST_SIZE = joblib.load('loaded/num_testing_entries')
 
     #Load tensors 
-    train_x = torch.FloatTensor( np.array( joblib.load('preprocessed/train_x_preprocessed') ) ).to(device) # TRAIN_SIZE x num_features 
+    train_x = np.array( joblib.load('preprocessed/train_x_preprocessed') ) # TRAIN_SIZE x num_features 
     print(" -- train_x loaded.")
-    train_y =  torch.FloatTensor( np.array( joblib.load('loaded/train_y_loaded') ) ).to(device) # TRAIN_SIZE x 4
+    train_y =  np.array( joblib.load('loaded/train_y_loaded') ) # TRAIN_SIZE x 4
     print(" -- train_y loaded.")
-    test_x =  torch.FloatTensor( np.array( joblib.load('preprocessed/test_x_preprocessed') ) ) # TEST_SIZE x num_features  
+    test_x =  np.array( joblib.load('preprocessed/test_x_preprocessed') )  # TEST_SIZE x num_features  
     print(" -- test_x loaded.")
-    test_y =  torch.FloatTensor( np.array( joblib.load('loaded/test_y_loaded') ) ) # TRAIN_SIZE x 4
+    test_y =  np.array( joblib.load('loaded/test_y_loaded') ) # TRAIN_SIZE x 4
     print(" -- test_y loaded.")
     print(" -- All datasets loaded.\n")
 
@@ -55,7 +56,7 @@ def MLP():
         nn.Linear(40, 50),
         nn.ReLU(),
         nn.Linear(50, 4)
-    ).to(device)
+    )
 
     #Declare loss, optimizer, and epochs, and batch size
     
@@ -79,14 +80,15 @@ def MLP():
 
         for i in range(0, TRAIN_SIZE, batch_size) :
             
-            slice = train_x[i:min(i+batch_size,TRAIN_SIZE)]
+            slice_x = torch.FloatTensor( train_x[i:min(i+batch_size,TRAIN_SIZE)] )
+            slice_y = torch.FloatTensor( train_y[i:i+batch_size] )
 
             #Get the set of predicted values from the model for each feature vector in the batch
             #Error happens at this line (v)
-            predicted_y = model(slice)
+            predicted_y = model(slice_x)
 
             #Compute loss for this batch
-            loss = loss_function(predicted_y, train_y[i:i+batch_size])
+            loss = loss_function(predicted_y, slice_y)
             
             #Do gradient descent 
             optimizer.zero_grad() 
