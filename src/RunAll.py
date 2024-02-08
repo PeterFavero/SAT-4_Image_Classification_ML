@@ -4,5 +4,5 @@ import DataLoading
 #Run DataPreprocessing
 import DataPreprocessing
 
-#Run ModelTraining
-import ModelTraining
+#Run MLPTraining
+import MLPTraining

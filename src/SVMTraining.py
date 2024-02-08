@@ -5,7 +5,6 @@ from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 import torch
 import torch.nn as nn
-import torch.nn.functional as functional
 from torch import optim
 torch.manual_seed(10)
 
@@ -31,13 +30,15 @@ assert( len(test_x) == len(test_y) )
 assert( len(test_x) == TEST_SIZE )
 assert( len(train_x[0]) == len(test_x[0]) ) 
 
-#Defining a function for MLP.
+#Defining a function that trains the MLP model.
 #If you run this as is with torch.manual_seed(10) as above and the parameters listed below, you 
 #should get a model with 99.711% accuracy in 2403 epoches. Feel free to change the manual seed, but note that may result in 
 #a much longer training time as some test runs went to several thousand epoches or more
 #before achieving sufficiently low loss to terminate.
 def MLP():
-    print(' -- Training MLP model: TRAIN_SIZE = ' + str(TRAIN_SIZE) + ' TEST_SIZE = ' + str(TEST_SIZE) + '.\n')
+    device_string = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu" 
+    device = torch.device(device_string)
+    print(' -- Training MLP model: TRAIN_SIZE = ' + str(TRAIN_SIZE) + ', TEST_SIZE = ' + str(TEST_SIZE) + ', device = ' + device_string + '.\n')
     #Define the length of feature vectors
     num_features = len(train_x[0])
 
@@ -49,11 +50,13 @@ def MLP():
         nn.Linear(40, 50),
         nn.ReLU(),
         nn.Linear(50, 4)
-    )
+    ).to(device)
 
     #Declare loss, optimizer, and epochs, and batch size
-    loss_function = nn.CrossEntropyLoss() #Good for classification
-    optimizer = optim.Adam(model.parameters(), lr=0.00025) #Adam optimizer, apparently very popular
+    
+    #Good for classification 
+    loss_function = nn.CrossEntropyLoss() #Automatically applies softmax, do not apply it yourself 
+    optimizer = optim.Adam(model.parameters(), lr=0.00025) 
     num_epochs = 10000
     batch_size = 200
     terminated_early = False
@@ -69,10 +72,10 @@ def MLP():
         for i in range(0, TRAIN_SIZE, batch_size) :
             
             #Get the set of predicted values from the model for each feature vector in the batch
-            predicted_y = model(torch.FloatTensor(train_x[i:i+batch_size]))
+            predicted_y = model(torch.FloatTensor(train_x[i:i+batch_size]).to(device))
 
             #Compute loss for this batch
-            loss = loss_function(predicted_y, torch.FloatTensor(train_y[i:i+batch_size]))
+            loss = loss_function(predicted_y, torch.FloatTensor(train_y[i:i+batch_size]).to(device))
             
             #Do gradient descent 
             optimizer.zero_grad() 
@@ -113,10 +116,10 @@ def MLP():
 
     plt.savefig("visualizations/MLP_visualization.png")
 
-#Run the MLP model
+#Train the MLP model
 MLP()
 
-#Define a function for SVM
+#Defining a function that trains the SVM model for a given c value
 def SVM(c_value):
     print(' -- Training SVM model: TRAIN_SIZE = ' + str(TRAIN_SIZE) + ' TEST_SIZE = ' + str(TEST_SIZE) + '.\n')
     #Defining function to transform the test_y from a N by 4 matrix
@@ -170,33 +173,36 @@ def SVM(c_value):
     return 100*correct/TEST_SIZE
 
 #Create visualization of SVM using C values of 0.1, 1, 10, 100, 1000, 10000, 100000
-c_values = []
-percentages = []
+def visualize_SVMs() :
+    c_values = []
+    percentages = []
 
-for c_multiplier in range(-1, 6):
-    #Set value of c to 10^c_multiplier
-    c_value = 10 ** c_multiplier
+    for c_multiplier in range(-1, 6):
+        #Set value of c to 10^c_multiplier
+        c_value = 10 ** c_multiplier
 
-    print(f' -- Testing C value of {c_value}:')
+        print(f' -- Testing C value of {c_value}:')
 
-    #Run the SVM model
-    percentage = SVM(c_value)
+        #Run the SVM model
+        percentage = SVM(c_value)
 
-    c_values.append(c_value)
-    percentages.append(percentage)
+        c_values.append(c_value)
+        percentages.append(percentage)
 
-fig, ax = plt.subplots(layout="constrained")
+    fig, ax = plt.subplots(layout="constrained")
 
-ax.plot(c_values, percentages, marker=".", markersize=10)
+    ax.plot(c_values, percentages, marker=".", markersize=10)
 
-ax.set_xlabel("C Value (Log Base 10 Scale)")
-ax.set_ylabel("Percentage Correct (%)")
-ax.set_title("C Value vs. Percentage Correct (%)")
+    ax.set_xlabel("C Value (Log Base 10 Scale)")
+    ax.set_ylabel("Percentage Correct (%)")
+    ax.set_title("C Value vs. Percentage Correct (%)")
 
-ax.set_xscale("log", base=10)
+    ax.set_xscale("log", base=10)
 
-plt.savefig("visualizations/SVM_visualization.png")
+    plt.savefig("visualizations/SVM_visualization.png")
 
-print("--- Saved Figure ---\n")
+    print("--- Saved Figure ---\n")
+
+#For fast training, simply train the most accurate SVM on c = 100000
 
 print("-------\nModelTraining.py terminated successfully.\n----\n")
