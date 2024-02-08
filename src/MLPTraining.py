@@ -16,8 +16,8 @@ print("\n----\nMLPTraining.py successfully compiled & run.\n-------\n")
 #should get a model with 99.711% accuracy in 2403 epoches.
 def MLP():
 
-    #Define device to perform training on (testing integrating this mps right now in my own branch, currently works best on CPU)
-    device_string = "cpu"
+    #Define device to perform training on (testing integrating this mps right now in my own branch, currently works best on Cuda, MPS is slower than CPU)
+    device_string = 'cuda' if torch.cuda.is_available() else 'cpu'
     device = torch.device(device_string)
 
     #Load size of training and testing subsets (constant here, do not edit)
