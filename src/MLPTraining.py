@@ -13,11 +13,11 @@ print("\n----\nMLPTraining.py successfully compiled & run.\n-------\n")
 
 #Defining a function that trains the MLP model.
 #If you run this as is with torch.manual_seed(10) as above and the parameters listed below, you 
-#should get a model with 99.711% accuracy in 2403 epoches. 
+#should get a model with 99.711% accuracy in 2403 epoches.
 def MLP():
 
-    #Define device to perform training on
-    device_string = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu" 
+    #Define device to perform training on (testing integrating this mps right now in my own branch, currently works best on CPU)
+    device_string = "cpu"
     device = torch.device(device_string)
 
     #Load size of training and testing subsets (constant here, do not edit)
@@ -64,6 +64,7 @@ def MLP():
     optimizer = optim.Adam(model.parameters(), lr=0.00025) 
     num_epochs = 10000
     batch_size = 200
+    loss_threshold = 0.01
     terminated_early = False
 
     #For visualization
@@ -78,11 +79,14 @@ def MLP():
 
         for i in range(0, TRAIN_SIZE, batch_size) :
             
+            slice = train_x[i:min(i+batch_size,TRAIN_SIZE)]
+
             #Get the set of predicted values from the model for each feature vector in the batch
-            predicted_y = model(train_x[i:i+batch_size])#.to(device)
+            #Error happens at this line (v)
+            predicted_y = model(slice)
 
             #Compute loss for this batch
-            loss = loss_function(predicted_y, train_y[i:i+batch_size])#.to(device)
+            loss = loss_function(predicted_y, train_y[i:i+batch_size])
             
             #Do gradient descent 
             optimizer.zero_grad() 
@@ -93,8 +97,8 @@ def MLP():
         losses.append(loss.item())
 
         print('      * Epoch #' + str(epoch).rjust(8) + '\t| loss = ' + format(loss.item()).rjust(8) + '\t| time = ' + format(round(time.time()-prev_time,6)).ljust(6) + ' s.')
-        if( loss.item() < 0.001 ) :
-            print(' -- Model training terminated by sufficiently low loss ( < 0.001 ):\n    max ' + 
+        if( loss.item() < loss_threshold ) :
+            print(' -- Model training terminated by sufficiently low loss ( < ' + str(loss_threshold) + '  ):\n    max ' + 
                 str(num_epochs) + ' epochs, batch_size = ' + str(batch_size) +'.')
             terminated_early = True
             break
@@ -103,6 +107,11 @@ def MLP():
     if( not terminated_early ) : 
         print(' -- Model training terminated by epoch limit: ' + str(num_epochs) + 
         ' epochs, batch_size = ' + str(batch_size) +'.')
+
+
+    #Move model to CPU now that we're done training, 
+    #since even evaluating the entire dataset is pretty fast
+    model.to(torch.device('cpu'))
 
     #Declare a variable to count how many test cases we correctly identify
     correct = 0
@@ -114,8 +123,7 @@ def MLP():
     print(' -- MLP Model tested, correctly identitifies ' + str(100*correct/TEST_SIZE) + '% of ' 
         + str(TEST_SIZE) + ' test cases.\n' )
 
-    #move model to cpu and save it 
-    model.to(torch.device('cpu'))
+    #Save model w/ joblib 
     joblib.dump(model, 'model/trainedMLP')
     print(" -- MLP Model dumped with joblib\n")
 
