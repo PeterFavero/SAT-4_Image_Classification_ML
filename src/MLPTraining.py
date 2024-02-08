@@ -13,9 +13,7 @@ print("\n----\nMLPTraining.py successfully compiled & run.\n-------\n")
 
 #Defining a function that trains the MLP model.
 #If you run this as is with torch.manual_seed(10) as above and the parameters listed below, you 
-#should get a model with 99.711% accuracy in 2403 epoches. Feel free to change the manual seed, but note that may result in 
-#a much longer training time as some test runs went to several thousand epoches or more
-#before achieving sufficiently low loss to terminate.
+#should get a model with 99.711% accuracy in 2403 epoches. 
 def MLP():
 
     #Define device to perform training on
